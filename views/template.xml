@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!--patient information-->
+    <template id="patients_page" name="Hospital Patients">
+        <t t-call="website.layout">
+            <t t-set="title"> Patient Info </t>
+            <div class="container">
+
+<!--            show information from hospital.patient-->
+                     <table class="table table.bordered">
+                         <thead>
+                             <tr>
+                                 <td>
+                                     Name
+                                 </td>
+
+                                 <td>
+                                     Age
+                                 </td>
+                             </tr>
+                         </thead>
+                         <tbody>
+                             <t t-foreach="patients" t-as="patient">
+                                 <tr>
+                                     <td>
+                                         <a t-attf-href="/patients/details/{{ slug(patient)}}">
+                                             <t t-esc="patient.name"/>
+                                         </a>
+<!--                                         <t t-esc="patient.name"/>-->
+                                     </td>
+                                     <td>
+                                         <t t-esc="patient.age"/>
+                                     </td>
+                                 </tr>
+                             </t>
+                         </tbody>
+                     </table>
+
+            </div>
+        </t>
+    </template>
+
+
+     <!--patient details information-->
+    <template id="patient_details_info" name="Patient Details">
+        <t t-call="website.layout">
+            <t t-set="title"> Patient Details </t>
+            <div class="oe_structure">
+                <div class="container mt-3">
+                    <h1>Patient Serial Number :  <t t-esc="patient_details.reference"/></h1>
+                    <h1>Patient Name :  <t t-esc="patient_details.name"/></h1>
+                    <h1>Patient Age :  <t t-esc="patient_details.age"/></h1>
+                    <h1>Patient Gender :  <t t-esc="patient_details.gender"/></h1>
+                    <h1>Patient Note :  <t t-esc="patient_details.note"/></h1>
+                </div>
+            </div>
+        </t>
+
+    </template>
+
+    <!--    customer information-->
+    <template id="customer_page" name="Customer Info">
+        <t t-call="website.layout">
+            <t t-set="title"> Customer Info </t>
+
+            <t t-foreach="customer_info" t-as="info">
+                <span t-field="info.image_1920"
+                      t-options="{'widget': 'image', 'preview_image': 'image_1920'}"
+                      class="d-flex h-180 justify-content-center align-items-center"
+                />
+                <div class="text-center" style="font-size: 28px;">
+                    <span t-esc="info.name"/>
+                </div>
+
+                <div class="text-center" style="font-size: 15px;">
+                    <span t-esc="info.email"/>
+                </div>+
+            </t>
+        </t>
+
+    </template>
+
+
+</odoo>

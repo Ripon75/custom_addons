@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- add kanban view  -->
+    <record id="view_patient_kanban" model="ir.ui.view">
+        <field name="name">hospital.patient.kanban</field>
+        <field name="model">hospital.patient</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="id"/>
+                <field name="name"/>
+                <field name="age"/>
+                <field name="gender"/>
+                <field name="note"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+
+                            <div class="oe_kanban_details">
+
+                                <ul>
+                                  <li>
+                                      Name : <field name="name"/>
+                                  </li>
+                                    <li>
+                                      Age : <field name="age"/>
+                                  </li>
+                                    <li>
+                                      Gender : <field name="gender"/>
+                                  </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <!-- add tree view-->
+    <record id="view_patient_tree" model="ir.ui.view">
+        <field name="name">hospital.patient.tree</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="reference" readonly="1"/>
+                <field name="name"/>
+                <field name="responsible_id"/>
+                <field name="age"/>
+                <field name="gender"/>
+                <field name="note"/>
+<!--             when appointment_count add tree view get singleton error solution iterate or loop-->
+                 <field name="appointment_count"/>
+
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <!--add form view-->
+    <record id="view_patient_form" model="ir.ui.view">
+        <field name="name">hospital.patient.form</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <form>
+
+<!--            add status bar in form view-->
+                <header>
+
+                    <button id="button_confirm" name="action_confirm" string="Confirm" class="btn-primary"
+                            type="object" states="draft" confirm="Are You Sure to Confirm ?"/>
+                    <button id="button_done" name="action_done" string="Mark As Done" class="btn-primary"
+                            type="object" states="confirm" confirm="Are You Sure to Done ?"/>
+
+                    <button id="button_draft" name="action_draft" string="Set To Draft" class="btn-primary"
+                            type="object" states="cancel" confirm="Are You Sure to Draft ?"/>
+
+                    <button id="button_cancel" name="action_cancel" string="Cancel"
+                            type="object" states="draft,done,confirm" confirm="Are You Sure to Cancel ?"/>
+
+<!--                   for statusbar-->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done,confirm"/>
+
+                </header>
+<!--             end statusbar in form view-->
+
+                <sheet>
+<!--                    add patient image-->
+                     <field name="image" widget="image" class="oe_avatar"/>
+
+
+<!--                add sequence-->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="reference" readonly="1"/>
+                        </h1>
+                    </div>
+<!--                end sequence-->
+                    <group>
+                        <group>
+                            <field name="name"/>
+                             <field name="responsible_id"/>
+                            <field name="age"/>
+                            <field name="appointment_count"/>
+                        </group>
+                        <group>
+<!--                        invisible="context.get('hide_gender')" = hide gender-->
+                            <field name="gender" invisible="context.get('hide_gender')"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+
+<!--                add notebook in form view-->
+                    <notebook>
+                        <page string="Appointment" name="appointment">
+                            <field name="appointment_ids">
+
+                                <!--can not edit in the tree view-->
+                                <tree create="0" edit="0" delete="0">
+                                    <field name="name"/>
+                                    <field name="patient_id"/>
+                                    <field name="gender" optional="show"/>
+                                    <field name="age" optional="show"/>
+                                    <field name="state" optional="show"/>
+                                    <field name="date_appointment" optional="hide"/>
+                                    <field name="time_appointment" optional="show"/>
+                                </tree>
+                                <!--end tree-->
+
+                                <!--can not edit form view-->
+                                <form create="0" edit="0" delete="0">
+                                    <group>
+                                        <group>
+                                            <field name="patient_id"/>
+                                            <!--readonly="1" means field not edit-->
+                                            <!--when use readonly="1" data is not save so then use force_save="1"(data save anyway)-->
+                                            <field name="gender" readonly="1" force_save="1"/>
+                                            <field name="age"/>
+                                        </group>
+                                        <group>
+                                            <field name="doctor_id"/>
+                                            <field name="date_appointment"/>
+                                            <field name="time_appointment"/>
+                                            <field name="note"/>
+                                        </group>
+                                    </group>
+                                </form>
+                                <!--end form-->
+                            </field>
+                        </page>
+                    </notebook>
+<!--                end notebook-->
+                </sheet>
+
+<!--             add chatter-->
+                 <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+<!--             end chatter-->
+
+            </form>
+        </field>
+    </record>
+
+
+    <!--add custom search view-->
+    <record id="view_patient_search" model="ir.ui.view">
+        <field name="name">hospital.patient.search</field>
+        <field name="model">hospital.patient</field>
+        <field name="arch" type="xml">
+            <search string="Patient">
+
+<!--            add search item-->
+                <field  name="name"/>
+                <field  name="note"/>
+<!--            end search item-->
+
+                <separator/>
+
+<!--             add filter item-->
+                 <filter string="Male" name="male" domain="[('gender', '=', 'male')]"/>
+                 <filter string="Female" name="female" domain="[('gender', '=', 'female')]"/>
+<!--             end filter item-->
+
+<!--            add group filter item-->
+                <group expand="1" string="Group By">
+                    <filter string="Gender" name="gender" context="{'group_by':'gender'}"/>
+                    <filter string="Patient Name" name="patient_name" context="{'group_by':'name'}"/>
+                </group>
+ <!--            end group filter item-->
+            </search>
+        </field>
+    </record>
+
+
+    <!-- add menu action-->
+    <record id="action_hospital_patient" model="ir.actions.act_window">
+        <field name="name">Patients</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hospital.patient</field>
+        <field name="view_mode">tree,kanban,form</field>
+
+<!--     (context means set value)default filter and group search-->
+        <field name="context">{'search_default_gender': 1}</field>
+<!--     end default filter and group search-->
+
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new patient
+            </p>
+        </field>
+    </record>
+
+
+    <!-- Top menu item Hospital-->
+    <menuitem id="menu_hospital_root"
+              name="Hospital"
+              sequence="10"/>
+<!--    submenu Patients inside top menu Hospital-->
+    <menuitem id="menu_patient_root"
+              name="Patients"
+              parent="menu_hospital_root"
+              sequence="10"/>
+<!--     submenu Patients inside submenu Patients-->
+     <menuitem id="menu_patient"
+              name="Patients"
+              parent="menu_patient_root"
+              action="action_hospital_patient"
+              sequence="10"/>
+
+
+</odoo>

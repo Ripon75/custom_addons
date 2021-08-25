@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- add kanban view  -->
+    <record id="view_appointment_kanban" model="ir.ui.view">
+        <field name="name">hospital.appointment.kanban</field>
+        <field name="model">hospital.appointment</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+<!--       (default_order="name desc") kanban view show descending order but tree view show ascending order-->
+            <kanban default_order="name desc">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="age"/>
+                <field name="gender"/>
+                <field name="note"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+
+                            <div class="oe_kanban_details">
+
+                                <ul>
+                                  <li>
+                                      Name : <field name="name"/>
+                                  </li>
+                                    <li>
+                                      Age : <field name="age"/>
+                                  </li>
+                                    <li>
+                                      Gender : <field name="gender"/>
+                                  </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+
+<!--  add tree view-->
+    <record id="view_appointment_tree" model="ir.ui.view">
+        <field name="name">hospital.appointment.tree</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+<!--        (multi_edit="1") edit multiple record in tree view-->
+            <tree multi_edit="1">
+<!--                add button in the tree view header-->
+<!--                 <header>-->
+<!--                     <button name="action_done" string="Mark As Done" class="btn-primary"-->
+<!--                            type="object"/>-->
+<!--                 </header>-->
+
+<!--             (optional="show/hide") create dynamic tree view-->
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="gender" optional="show"/>
+                <field name="age" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="date_appointment" optional="hide"/>
+                <field name="time_appointment" optional="show"/>
+
+            </tree>
+        </field>
+    </record>
+
+
+  <!--add form view-->
+    <record id="view_appointment_form" model="ir.ui.view">
+        <field name="name">hospital.appointment.form</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <form>
+
+<!--            add status bar in form view-->
+                <header>
+
+                    <button id="button_confirm" name="action_confirm" string="Confirm" class="btn-primary"
+                            type="object" states="draft" confirm="Are You Sure to Confirm ?"/>
+                    <button id="button_done" name="action_done" string="Mark As Done" class="btn-primary"
+                            type="object" states="confirm" confirm="Are You Sure to Done ?"/>
+
+                    <button id="button_draft" name="action_draft" string="Set To Draft" class="btn-primary"
+                            type="object" states="cancel" confirm="Are You Sure to Draft ?"/>
+
+                    <button id="button_cancel" name="action_cancel" string="Cancel"
+                            type="object" states="draft,done,confirm" confirm="Are You Sure to Cancel ?"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done,confirm"/>
+                </header>
+<!--             end status bar in form view-->
+
+                <sheet>
+<!--                add sequence-->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+<!--                end sequence-->
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+<!--                         readonly="1" means field not edit-->
+<!--                         when use readonly="1" data is not save so then use force_save="1"(data save anyway)-->
+                            <field name="gender" readonly="1" force_save="1"/>
+                            <field name="age"/>
+                        </group>
+                        <group>
+                            <field name="doctor_id"/>
+                            <field name="date_appointment"/>
+                            <field name="time_appointment"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+
+<!--                notebook                   -->
+                    <notebook position="inside">
+                        <page string="Doctor Prescription" name="doctor_prescription">
+                            <group>
+                                <group>
+                                    <field name="prescription"/>
+                                </group>
+
+                            </group>
+                        </page>
+
+                        <page string="Medicine" name="medicine">
+                            <field name="prescription_line_ids">
+
+<!--                            tree view inside notebook-->
+<!--                            (editable="bottom/top") if use view not show-->
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="quantity"/>
+                                </tree>
+<!--                                end tree view-->
+
+<!--                            form view inside notebook-->
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="name"/>
+                                        </group>
+                                        <group>
+                                            <field name="quantity"/>
+                                        </group>
+                                    </group>
+                                </form>
+<!--                            end form view-->
+
+                            </field>
+                        </page>
+
+                        <page string="Other Info" name="other_info">
+                            <group>
+                                 <group>
+
+                                </group>
+                            </group>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+<!--              add chatter-->
+                 <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+<!--             end chatter-->
+
+            </form>
+        </field>
+    </record>
+
+
+    <!--add custom search view-->
+    <record id="view_appointment_search" model="ir.ui.view">
+        <field name="name">hospital.appointment.search</field>
+        <field name="model">hospital.appointment</field>
+        <field name="arch" type="xml">
+            <search string="Appointment">
+
+<!--            add search item-->
+                <field  name="name"/>
+                <field  name="note"/>
+<!--            end search item-->
+
+                <separator/>
+
+<!--             add filter item-->
+<!--                 <filter string="Male" name="male" domain="[('gender', '=', 'male')]"/>-->
+<!--                 <filter string="Female" name="female" domain="[('gender', '=', 'female')]"/>-->
+<!--             end filter item-->
+
+<!--            add group filter item-->
+                <group expand="1" string="Group By">
+                    <filter string="Appointment" name="appointment_name" context="{'group_by':'patient_id'}"/>
+                </group>
+ <!--            end group filter item-->
+            </search>
+        </field>
+    </record>
+
+
+
+    <!--    add menu action-->
+    <record id="action_hospital_appointment" model="ir.actions.act_window">
+        <field name="name">Appointments</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hospital.appointment</field>
+        <field name="view_mode">tree,form,kanban</field>
+
+        <!--     default filter and group search-->
+        <field name="context">{}</field>
+        <!--     end default filter and group search-->
+
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create Your First Appointment
+            </p>
+        </field>
+    </record>
+
+    <!-- Top menu item -->
+    <menuitem id="menu_appointment_root"
+              name="Appointments"
+              parent="menu_hospital_root"
+              sequence="20"/>
+
+    <menuitem id="menu_appointment"
+              name="Appointments"
+              parent="menu_appointment_root"
+              action="action_hospital_appointment"
+              sequence="10"/>
+
+    <menuitem id="menu_create_appointment"
+              name="Appointments Create"
+              parent="menu_appointment_root"
+              action="action_create_appointment"
+              sequence="20"/>
+
+</odoo>

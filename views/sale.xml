@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--    inherit view-->
+    <!--    add new field self description in form view-->
+    <record id="view_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.inherited</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="sale_description"/>
+            </xpath>
+            <xpath expr="//field[@name='commitment_date']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <!--    change the name of menu item order to New Order-->
+    <!--    <record id="sale.menu_sale_order" model="ir.ui.menu">-->
+    <!--        <field name="name">Orders</field>-->
+    <!--    </record>-->
+
+    <!--  add new record in tree view-->
+    <record id="view_order_tree_inherit" model="ir.ui.view">
+        <field name="name">sale.order.inherited</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="sale_description"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--    add menu sale module-->
+    <menuitem id="menu_sale_appointment"
+              name="Appointments"
+              sequence="2"
+              parent="sale.sale_order_menu"
+              action="action_hospital_appointment"
+              />
+
+</odoo>
